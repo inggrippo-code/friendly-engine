@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Servicio - Servicios Full</title>
+    <style>
+        body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .orange { color: #ffa500; }
+        .search-box { background: #262626; padding: 20px; border-radius: 10px; display: inline-block; width: 90%; max-width: 400px; border: 1px solid #333; }
+        input { display: block; margin: 10px auto; padding: 12px; width: 90%; border-radius: 5px; border: none; }
+        button { background: #ffa500; color: black; border: none; padding: 15px; width: 95%; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        #resultados { margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .tarjeta { background: #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #ffa500; }
+    </style>
+</head>
+<body>
+    <h1 class="orange">Buscador de Expertos</h1>
+    <p>Introduce tu ciudad y el oficio que necesitas.</p>
+
+    <div class="search-box">
+        <input type="text" id="buscarCiudad" placeholder="Ej: Posadas">
+        <input type="text" id="buscarOficio" placeholder="Ej: Plomero">
+        <button onclick="ejecutarBusqueda()">BUSCAR AHORA</button>
+    </div>
+
+    <div id="resultados">
+        </div>
+
+    <script>
+        async function ejecutarBusqueda() {
+            const ciudad = document.getElementById('buscarCiudad').value.toLowerCase();
+            const oficio = document.getElementById('buscarOficio').value.toLowerCase();
+            const divResultados = document.getElementById('resultados');
+            
+            divResultados.innerHTML = "Buscando...";
+
+            try {
+                // Le pedimos al servidor la lista de usuarios
+                const res = await fetch('/usuarios-datos');
+                const prestadores = await res.json();
+
+                // Filtramos los que coinciden con ciudad y oficio
+                const filtrados = prestadores.filter(p => 
+                    p.ciudad.toLowerCase().includes(ciudad) && 
+                    p.servicio.toLowerCase().includes(oficio) &&
+                    p.tipo === 'prestador'
+                );
+
+                divResultados.innerHTML = ""; // Limpiamos el "Buscando..."
+
+                if (filtrados.length === 0) {
+                    divResultados.innerHTML = "<p>No se encontraron expertos en esa zona.</p>";
+                    return;
+                }
+
+                filtrados.forEach(p => {
+                    divResultados.innerHTML += `
+                        <div class="tarjeta">
+                            <strong class="orange">${p.nombre}</strong><br>
+                            📍 ${p.ciudad}<br>
+                            📞 Celular: ${p.celular}<br>
+                            🛠️ Especialidad: ${p.servicio}
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                divResultados.innerHTML = "Error al conectar con la base de datos.";
+            }
+        }
+    </script>
+</body>
+</html>

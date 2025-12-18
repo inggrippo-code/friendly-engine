@@ -9,12 +9,15 @@
         .orange { color: #ffa500; }
         .search-box { background: #262626; padding: 20px; border-radius: 10px; display: inline-block; width: 90%; max-width: 400px; border: 1px solid #333; margin-bottom: 20px; }
         input { display: block; margin: 10px auto; padding: 12px; width: 90%; border-radius: 5px; border: none; }
-        button { background: #ffa500; color: black; border: none; padding: 15px; width: 95%; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        .btn-volver { background: transparent; color: #ffa500; border: 1px solid #ffa500; padding: 10px; margin-top: 20px; width: auto; display: inline-block; }
+        .btn-buscar { background: #ffa500; color: black; border: none; padding: 15px; width: 95%; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .btn-volver { background: transparent; color: #ffa500; border: 1px solid #ffa500; padding: 10px; margin-top: 20px; width: auto; display: inline-block; cursor: pointer; text-decoration: none; border-radius: 5px; }
         #resultados { margin-top: 30px; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
         .tarjeta { background: #333; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #ffa500; position: relative; }
         .badge { background: #444; color: #ffa500; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; position: absolute; top: 15px; right: 15px; border: 1px solid #ffa500; }
         .resena-texto { font-style: italic; color: #ccc; margin-top: 10px; font-size: 14px; border-top: 1px solid #444; padding-top: 10px; }
+        .calificar-box { margin-top: 15px; display: flex; justify-content: space-around; background: #222; padding: 10px; border-radius: 5px; }
+        .btn-calif { background: transparent; border: 1px solid #555; color: #aaa; padding: 5px 8px; font-size: 11px; cursor: pointer; border-radius: 3px; }
+        .btn-calif:hover { border-color: #ffa500; color: #ffa500; }
     </style>
 </head>
 <body>
@@ -23,12 +26,12 @@
     <div class="search-box">
         <input type="text" id="buscarCiudad" placeholder="Ciudad (Ej: Posadas)">
         <input type="text" id="buscarOficio" placeholder="Oficio (Ej: Plomero)">
-        <button onclick="ejecutarBusqueda()">BUSCAR AHORA</button>
+        <button class="btn-buscar" onclick="ejecutarBusqueda()">BUSCAR AHORA</button>
     </div>
 
     <div id="resultados"></div>
 
-    <button class="btn-volver" onclick="window.location.href='/'">Volver al Inicio</button>
+    <a href="/" class="btn-volver">Volver al Inicio</a>
 
     <script>
         async function ejecutarBusqueda() {
@@ -54,24 +57,34 @@
                     return;
                 }
 
-                filtrados.forEach(p => {
-                    // Si no tiene calificación aún, mostramos "Pendiente"
-                    const calif = p.calificacion || "En proceso";
-                    
+                filtrados.forEach((p, index) => {
+                    const calif = p.calificacion || "Buena";
                     divResultados.innerHTML += `
                         <div class="tarjeta">
-                            <span class="badge">Sello SF: ${calif}</span>
+                            <span class="badge" id="badge-${index}">${calif}</span>
                             <strong class="orange" style="font-size: 1.2em;">${p.nombre}</strong><br>
-                            📍 ${p.ciudad}<br>
-                            📞 <a href="tel:${p.celular}" style="color:white; text-decoration:none;">${p.celular}</a><br>
-                            🛠️ ${p.servicio}
+                            📍 ${p.ciudad} | 🛠️ ${p.servicio}<br>
+                            📞 <a href="tel:${p.celular}" style="color:white; text-decoration:none;">${p.celular}</a>
                             <div class="resena-texto">"${p.resena}"</div>
+                            
+                            <div class="calificar-box">
+                                <span style="font-size: 12px; color: #888;">Calificar:</span>
+                                <button class="btn-calif" onclick="votar('${p.email}', 'Buena', ${index})">BUENA</button>
+                                <button class="btn-calif" onclick="votar('${p.email}', 'Muy Buena', ${index})">MUY BUENA</button>
+                                <button class="btn-calif" onclick="votar('${p.email}', 'Excelente', ${index})">EXCELENTE</button>
+                            </div>
                         </div>
                     `;
                 });
             } catch (err) {
-                divResultados.innerHTML = "Error al conectar con la base de datos.";
+                divResultados.innerHTML = "Error al conectar.";
             }
+        }
+
+        async function votar(email, nota, idx) {
+            alert("Gracias por calificar. Tu voto para " + nota + " ha sido enviado.");
+            // Aquí en el futuro conectaremos la lógica para sobreescribir el archivo
+            document.getElementById('badge-' + idx).innerText = nota;
         }
     </script>
 </body>

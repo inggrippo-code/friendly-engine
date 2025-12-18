@@ -5,65 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SERVICIOS FULL</title>
     <style>
-        body { background-color: #1a1a1a; color: white; font-family: 'Arial', sans-serif; text-align: center; padding: 40px; }
-        .logo-circle { background: #ffa500; color: black; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin: 0 auto 20px; box-shadow: 0 0 20px rgba(255, 165, 0, 0.3); }
-        h1 { font-size: 36px; margin-bottom: 10px; }
+        body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .logo-circle { background: #ffa500; color: black; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 10px; }
         .orange { color: #ffa500; }
-        .tagline { color: #ccc; max-width: 500px; margin: 0 auto 30px; line-height: 1.5; }
-        
-        /* Botones Principales */
-        .main-button { background: #ffa500; color: black; border: none; padding: 15px 30px; font-weight: bold; border-radius: 5px; margin: 10px; width: 220px; cursor: pointer; text-transform: uppercase; }
-        .outline-button { background: transparent; color: #ffa500; border: 2px solid #ffa500; padding: 13px 30px; font-weight: bold; border-radius: 5px; margin: 10px; width: 220px; cursor: pointer; text-transform: uppercase; }
-        
-        /* Formulario de Registro */
-        .form-container { background: #262626; padding: 30px; border-radius: 15px; display: inline-block; margin-top: 40px; width: 320px; border: 1px solid #333; }
-        .form-container h3 { color: #ffa500; margin-top: 0; }
-        input { display: block; margin: 12px auto; padding: 12px; width: 90%; border-radius: 5px; border: 1px solid #444; background: white; color: black; }
-        .reg-btn { background: #ffa500; color: black; border: none; padding: 12px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; margin-top: 10px; }
-        #mensaje { margin-top: 15px; font-size: 14px; }
+        .btn-group { margin: 20px 0; }
+        button { padding: 12px 20px; margin: 5px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-main { background: #ffa500; border: none; }
+        .btn-outline { background: transparent; border: 2px solid #ffa500; color: #ffa500; }
+        .form-container { background: #262626; padding: 20px; border-radius: 10px; display: inline-block; width: 90%; max-width: 400px; margin-top: 20px; border: 1px solid #333; }
+        input, select { display: block; margin: 10px auto; padding: 10px; width: 90%; border-radius: 5px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="logo-circle">SF</div>
     <h1>SERVICIOS <span class="orange">FULL</span></h1>
-    <p class="tagline">La red profesional que vincula tus necesidades con expertos de confianza. Trato directo, rápido y seguro.</p>
+    <p>Conectamos necesidades con expertos locales.</p>
 
-    <div>
-        <button class="main-button">Busco un Servicio</button>
-        <button class="outline-button">Soy Prestador</button>
+    <div class="btn-group">
+        <button class="btn-main" onclick="mostrarForm('usuario')">BUSCO UN SERVICIO</button>
+        <button class="btn-outline" onclick="mostrarForm('prestador')">SOY PRESTADOR</button>
     </div>
 
-    <div class="form-container">
-        <h3>Regístrate</h3>
-        <input type="text" id="nombre" placeholder="Nombre completo">
-        <input type="email" id="email" placeholder="Correo electrónico">
-        <input type="password" id="password" placeholder="Contraseña">
-        <button class="reg-btn" onclick="registrar()">Registrarme</button>
+    <div id="registro-seccion" class="form-container hidden">
+        <h3 id="titulo-form" class="orange">Regístrate</h3>
+        <input type="text" id="nombre" placeholder="Nombre y Apellido">
+        <input type="email" id="email" placeholder="Email">
+        <input type="tel" id="celular" placeholder="Número de Celular">
+        <input type="text" id="ciudad" placeholder="Ciudad / Localidad">
+        
+        <div id="campos-prestador" class="hidden">
+            <input type="text" id="servicio" placeholder="¿Qué servicio prestas? (Ej: Plomero)">
+        </div>
+
+        <button class="btn-main" style="width: 95%" onclick="enviarDatos()">FINALIZAR REGISTRO</button>
         <p id="mensaje"></p>
     </div>
 
     <script>
-        async function registrar() {
-            const nombre = document.getElementById('nombre').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const mensajeDiv = document.getElementById('mensaje');
+        let tipoUsuario = '';
 
-            try {
-                const res = await fetch('/registro', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombre, email, password })
-                });
+        function mostrarForm(tipo) {
+            tipoUsuario = tipo;
+            document.getElementById('registro-seccion').classList.remove('hidden');
+            document.getElementById('titulo-form').innerText = tipo === 'usuario' ? 'Registro de Usuario' : 'Registro de Prestador';
+            
+            const camposPrestador = document.getElementById('campos-prestador');
+            tipo === 'prestador' ? camposPrestador.classList.remove('hidden') : camposPrestador.classList.add('hidden');
+        }
 
-                const msg = await res.text();
-                mensajeDiv.innerText = msg;
-                mensajeDiv.style.color = res.ok ? "#00ff00" : "#ff4444";
-            } catch (err) {
-                mensajeDiv.innerText = "Error de conexión";
-                mensajeDiv.style.color = "#ff4444";
-            }
+        async function enviarDatos() {
+            const datos = {
+                tipo: tipoUsuario,
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                celular: document.getElementById('celular').value,
+                ciudad: document.getElementById('ciudad').value,
+                servicio: document.getElementById('servicio').value || 'N/A'
+            };
+
+            const res = await fetch('/registro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+
+            document.getElementById('mensaje').innerText = await res.text();
         }
     </script>
 </body>
 </html>
+    
+  

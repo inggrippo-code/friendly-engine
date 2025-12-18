@@ -6,11 +6,10 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '.')));
 
-// Ruta para procesar el registro con los nuevos campos de calificación
+// Ruta para procesar el registro con calificación inicial automática
 app.post('/registro', (req, res) => {
     const { tipo, nombre, email, celular, ciudad, servicio, resena, experiencia, referencias } = req.body;
     
-    // Creamos el objeto con TODO lo que el prestador nos envió
     const nuevoUsuario = { 
         tipo, 
         nombre, 
@@ -20,7 +19,8 @@ app.post('/registro', (req, res) => {
         servicio, 
         resena: resena || "Sin reseña", 
         experiencia: experiencia || "Sin datos", 
-        referencias: referencias || "Sin referencias"
+        referencias: referencias || "Sin referencias",
+        calificacion: "Buena" // Calificación automática de entrada
     };
     
     const linea = JSON.stringify(nuevoUsuario) + "\n";
@@ -31,7 +31,7 @@ app.post('/registro', (req, res) => {
     });
 });
 
-// Ruta para que el buscador obtenga los datos actualizados
+// Ruta para que el buscador obtenga los datos
 app.get('/usuarios-datos', (req, res) => {
     fs.readFile('usuarios.txt', 'utf8', (err, data) => {
         if (err || !data) return res.json([]);
@@ -39,7 +39,7 @@ app.get('/usuarios-datos', (req, res) => {
             const lista = data.trim().split("\n").map(linea => JSON.parse(linea));
             res.json(lista);
         } catch (e) {
-            res.json([]); // Evita que el servidor se caiga si hay un error en el archivo
+            res.json([]);
         }
     });
 });

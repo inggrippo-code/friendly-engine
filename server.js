@@ -4,18 +4,13 @@ const path = require('path');
 const app = express();
 
 app.use(express.json());
-app.use(express.static('.'));
 
-// Servir la página de búsqueda cuando se pida
-app.get('/buscar', (req, res) => {
-    res.sendFile(path.join(__dirname, 'buscar.html'));
-});
+// Esta línea es la clave: le dice al servidor que busque archivos en la carpeta principal
+app.use(express.static(path.join(__dirname, '.')));
 
-// Ruta para procesar el registro
+// Ruta para el registro de usuarios
 app.post('/registro', (req, res) => {
     const { tipo, nombre, email, celular, ciudad, servicio } = req.body;
-    
-    // Guardamos los datos como un objeto para que sea fácil buscarlos luego
     const nuevoUsuario = { tipo, nombre, email, celular, ciudad, servicio };
     const linea = JSON.stringify(nuevoUsuario) + "\n";
 
@@ -25,14 +20,23 @@ app.post('/registro', (req, res) => {
     });
 });
 
-// Ruta que el buscador usa para obtener los datos
+// Ruta para obtener los datos que usará el buscador
 app.get('/usuarios-datos', (req, res) => {
     fs.readFile('usuarios.txt', 'utf8', (err, data) => {
         if (err || !data) return res.json([]);
-        // Convertimos el texto del archivo en una lista real para el buscador
         const lista = data.trim().split("\n").map(linea => JSON.parse(linea));
         res.json(lista);
     });
 });
 
-app.listen(3000, () => console.log("Servidor listo"));
+// Ruta secreta para ver la lista cruda
+app.get('/lista', (req, res) => {
+    fs.readFile('usuarios.txt', 'utf8', (err, data) => {
+        if (err) return res.send("No hay datos");
+        res.send(`<pre>${data}</pre>`);
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Servidor activo"));
+ 

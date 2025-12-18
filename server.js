@@ -14,25 +14,26 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// --- RUTAS DE USUARIOS ---
+// --- RUTA PARA REGISTRAR USUARIOS ---
+app.post('/registro', async (req, res) => {
+    const { nombre, email, password } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await query('INSERT INTO usuarios (nombre, email, password) VALUES ($1, $2, $3)', [nombre, email, hashedPassword]);
+        res.status(201).send('Usuario registrado con éxito');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al registrar usuario');
+    }
+});
+
+// --- RUTAS DE CONSULTA ---
 app.get('/usuarios', async (req, res) => {
     try {
         const result = await query('SELECT id, nombre, email, fecha_registro FROM usuarios ORDER BY id ASC;');
         res.json(result.rows);
     } catch (err) {
-        console.error(err);
         res.status(500).send('Error al obtener usuarios');
-    }
-});
-
-// --- RUTAS DE SERVICIOS ---
-app.get('/servicios', async (req, res) => {
-    try {
-        const result = await query('SELECT * FROM servicios ORDER BY id ASC;');
-        res.json(result.rows);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error al obtener servicios');
     }
 });
 
@@ -50,3 +51,4 @@ async function startServer() {
 }
 
 startServer();
+

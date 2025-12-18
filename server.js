@@ -4,14 +4,25 @@ const path = require('path');
 const app = express();
 
 app.use(express.json());
-
-// Esta línea es la clave: le dice al servidor que busque archivos en la carpeta principal
 app.use(express.static(path.join(__dirname, '.')));
 
-// Ruta para el registro de usuarios
+// Ruta para procesar el registro con los nuevos campos de calificación
 app.post('/registro', (req, res) => {
-    const { tipo, nombre, email, celular, ciudad, servicio } = req.body;
-    const nuevoUsuario = { tipo, nombre, email, celular, ciudad, servicio };
+    const { tipo, nombre, email, celular, ciudad, servicio, resena, experiencia, referencias } = req.body;
+    
+    // Creamos el objeto con TODO lo que el prestador nos envió
+    const nuevoUsuario = { 
+        tipo, 
+        nombre, 
+        email, 
+        celular, 
+        ciudad, 
+        servicio, 
+        resena: resena || "Sin reseña", 
+        experiencia: experiencia || "Sin datos", 
+        referencias: referencias || "Sin referencias"
+    };
+    
     const linea = JSON.stringify(nuevoUsuario) + "\n";
 
     fs.appendFile('usuarios.txt', linea, (err) => {
@@ -20,23 +31,18 @@ app.post('/registro', (req, res) => {
     });
 });
 
-// Ruta para obtener los datos que usará el buscador
+// Ruta para que el buscador obtenga los datos actualizados
 app.get('/usuarios-datos', (req, res) => {
     fs.readFile('usuarios.txt', 'utf8', (err, data) => {
         if (err || !data) return res.json([]);
-        const lista = data.trim().split("\n").map(linea => JSON.parse(linea));
-        res.json(lista);
-    });
-});
-
-// Ruta secreta para ver la lista cruda
-app.get('/lista', (req, res) => {
-    fs.readFile('usuarios.txt', 'utf8', (err, data) => {
-        if (err) return res.send("No hay datos");
-        res.send(`<pre>${data}</pre>`);
+        try {
+            const lista = data.trim().split("\n").map(linea => JSON.parse(linea));
+            res.json(lista);
+        } catch (e) {
+            res.json([]); // Evita que el servidor se caiga si hay un error en el archivo
+        }
     });
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Servidor activo"));
- 
+app.listen(PORT, () => console.log("Servidor SERVICIOS FULL activo"));

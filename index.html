@@ -3,125 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SERVICIOS FULL - Conectando Soluciones</title>
+    <title>SERVICIOS FULL</title>
     <style>
-        :root {
-            --naranja: #FF8C00; /* Naranja vibrante para acción */
-            --negro: #1A1A1A;   /* Negro profundo para autoridad */
-            --blanco: #FFFFFF;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--negro);
-            color: var(--blanco);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-        }
-
-        .container {
-            padding: 20px;
-            max-width: 500px;
-        }
-
-        /* Simulación del Logo Psicológico */
-        .logo-container {
-            background-color: var(--naranja);
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 20px rgba(255, 140, 0, 0.4);
-        }
-
-        .logo-placeholder {
-            font-size: 50px;
-            color: var(--negro);
-            font-weight: bold;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        h1 span {
-            color: var(--naranja);
-        }
-
-        p {
-            font-size: 1.1rem;
-            color: #CCCCCC;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            text-decoration: none;
-            transition: transform 0.2s, background-color 0.2s;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-primary {
-            background-color: var(--naranja);
-            color: var(--negro);
-        }
-
-        .btn-secondary {
-            background-color: transparent;
-            color: var(--naranja);
-            border: 2px solid var(--naranja);
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
-        }
-
-        /* Estilo para Smartphones */
-        @media (max-width: 600px) {
-            h1 { font-size: 2rem; }
-            .container { width: 90%; }
-        }
+        body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        .logo { color: #ffa500; font-size: 48px; font-weight: bold; }
+        .form-container { background: #333; padding: 20px; border-radius: 10px; display: inline-block; margin-top: 20px; }
+        input { display: block; margin: 10px auto; padding: 10px; width: 80%; border-radius: 5px; border: none; }
+        button { background: #ffa500; color: black; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
 <body>
+    <div class="logo">SF</div>
+    <h1>SERVICIOS <span style="color: #ffa500;">FULL</span></h1>
+    <p>La red profesional que vincula tus necesidades.</p>
 
-    <div class="container">
-        <div class="logo-container">
-            <div class="logo-placeholder">SF</div>
-        </div>
-
-        <h1>SERVICIOS <span>FULL</span></h1>
-        
-        <p>La red profesional que vincula tus necesidades con expertos de confianza. <b>Trato directo, rápido y seguro.</b></p>
-
-        <div class="btn-group">
-            <a href="/registro" class="btn btn-primary">BUSCO UN SERVICIO</a>
-            <a href="/unirse" class="btn btn-secondary">SOY PRESTADOR</a>
-        </div>
+    <div class="form-container">
+        <h3>Regístrate</h3>
+        <input type="text" id="nombre" placeholder="Nombre completo">
+        <input type="email" id="email" placeholder="Correo electrónico">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button onclick="registrar()">Registrarme</button>
+        <p id="mensaje"></p>
     </div>
 
+    <script>
+        async function registrar() {
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const res = await fetch('/registro', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, email, password })
+            });
+
+            const msg = await res.text();
+            document.getElementById('mensaje').innerText = msg;
+        }
+    </script>
 </body>
 </html>

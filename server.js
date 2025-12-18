@@ -2,62 +2,74 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '.')));
+app.use(express.static(__dirname));
 
-// 1. Ruta para registrar nuevos usuarios
+// RUTA PARA REGISTRAR PRESTADORES (Ahora nacen sin verificación)
 app.post('/registro', (req, res) => {
-    const { tipo, nombre, email, celular, ciudad, servicio, resena, experiencia, referencias } = req.body;
+    const { tipo, nombre, email, celular, ciudad, servicio, resena } = req.body;
+    
     const nuevoUsuario = { 
-        tipo, nombre, email, celular, ciudad, servicio, 
+        tipo, 
+        nombre, 
+        email, 
+        celular, 
+        ciudad, 
+        servicio, 
         resena: resena || "Sin reseña", 
-        experiencia: experiencia || "Sin datos", 
-        referencias: referencias || "Sin referencias",
-        calificacion: "Buena" 
+        calificacion: "Buena",
+        verificado: false // Obliga a validación manual por el administrador
     };
+
     const linea = JSON.stringify(nuevoUsuario) + "\n";
+    
     fs.appendFile('usuarios.txt', linea, (err) => {
-        if (err) return res.status(500).send("Error al guardar");
-        res.send("¡Usuario registrado con éxito!");
+        if (err) return res.status(500).send("Error al guardar.");
+        res.send("Registro recibido. Pendiente de verificación.");
     });
 });
 
-// 2. Ruta para obtener los datos
-app.get('/usuarios-datos', (req, res) => {
-    fs.readFile('usuarios.txt', 'utf8', (err, data) => {
-        if (err || !data) return res.json([]);
-        try {
-            const lista = data.trim().split("\n").map(linea => JSON.parse(linea));
-            res.json(lista);
-        } catch (e) { res.json([]); }
-    });
-});
-
-// 3. NUEVA RUTA: Para guardar la calificación permanente
+// RUTA PARA CALIFICAR (Guarda los votos permanentemente)
 app.post('/calificar', (req, res) => {
     const { email, nuevaCalif } = req.body;
+    
     fs.readFile('usuarios.txt', 'utf8', (err, data) => {
-        if (err) return res.status(500).send("Error al leer");
+        if (err) return res.status(500).send("Error al leer base de datos.");
         
-        let usuarios = data.trim().split("\n").map(linea => JSON.parse(linea));
-        
-        // Buscamos al prestador por su email y actualizamos su nota
-        usuarios = usuarios.map(u => {
+        let lineas = data.trim().split('\n');
+        let actualizado = false;
+
+        const nuevasLineas = lineas.map(linea => {
+            let u = JSON.parse(linea);
             if (u.email === email) {
                 u.calificacion = nuevaCalif;
+                actualizado = true;
             }
-            return u;
+            return JSON.stringify(u);
         });
 
-        // Guardamos todo de nuevo en el archivo
-        const nuevoContenido = usuarios.map(u => JSON.stringify(u)).join("\n") + "\n";
-        fs.writeFile('usuarios.txt', nuevoContenido, (err) => {
-            if (err) return res.status(500).send("Error al actualizar");
-            res.send("Calificación guardada");
+        fs.writeFile('usuarios.txt', nuevasLineas.join('\n') + '\n', (err) => {
+            if (err) return res.status(500).send("Error al guardar voto.");
+            res.send("Voto guardado.");
         });
     });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Servidor SERVICIOS FULL activo"));
+// RUTA PARA LEER LOS DATOS (El buscador usa esta ruta)
+app.get('/usuarios-datos', (req, res) => {
+    fs.readFile('usuarios.txt', 'utf8', (err, data) => {
+        if (err) return res.json([]);
+        const lineas = data.trim().split('\n').map(l => JSON.parse(l));
+        res.json(lineas);
+    });
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`);
+});

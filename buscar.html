@@ -15,8 +15,6 @@
         .tarjeta { background: #333; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #ffa500; position: relative; }
         .badge { background: #444; color: #ffa500; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; position: absolute; top: 15px; right: 15px; border: 1px solid #ffa500; }
         .resena-texto { font-style: italic; color: #ccc; margin-top: 10px; font-size: 14px; border-top: 1px solid #444; padding-top: 10px; margin-bottom: 15px; }
-        
-        /* Estilos para los nuevos botones de calificación */
         .seccion-voto { background: #222; padding: 10px; border-radius: 5px; display: flex; align-items: center; justify-content: space-between; }
         .btn-voto { background: #444; color: white; border: 1px solid #555; padding: 5px 10px; font-size: 11px; cursor: pointer; border-radius: 3px; }
         .btn-voto:hover { background: #ffa500; color: black; border-color: #ffa500; }
@@ -71,9 +69,9 @@
                             
                             <div class="seccion-voto">
                                 <span style="font-size: 11px; color: #888;">CALIFICAR:</span>
-                                <button class="btn-voto" onclick="votar('${p.email}', 'Buena', ${index})">BUENA</button>
-                                <button class="btn-voto" onclick="votoEspecial('${p.email}', 'Muy Buena', ${index})">MUY BUENA</button>
-                                <button class="btn-voto" onclick="votoEspecial('${p.email}', 'Excelente', ${index})">EXCELENTE</button>
+                                <button class="btn-voto" onclick="enviarVoto('${p.email}', 'Buena', ${index})">BUENA</button>
+                                <button class="btn-voto" onclick="enviarVoto('${p.email}', 'Muy Buena', ${index})">MUY BUENA</button>
+                                <button class="btn-voto" onclick="enviarVoto('${p.email}', 'Excelente', ${index})">EXCELENTE</button>
                             </div>
                         </div>
                     `;
@@ -83,14 +81,23 @@
             }
         }
 
-        function votar(email, nota, idx) {
-            alert("Gracias por tu calificación: " + nota);
-            document.getElementById('badge-' + idx).innerText = "Sello SF: " + nota;
-        }
+        async function enviarVoto(email, nota, idx) {
+            try {
+                const response = await fetch('/calificar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, nuevaCalif: nota })
+                });
 
-        function votoEspecial(email, nota, idx) {
-            alert("Has calificado como " + nota + ". ¡Gracias por ayudar a la comunidad!");
-            document.getElementById('badge-' + idx).innerText = "Sello SF: " + nota;
+                if (response.ok) {
+                    alert("¡Gracias! Calificación '" + nota + "' guardada permanentemente.");
+                    document.getElementById('badge-' + idx).innerText = "Sello SF: " + nota;
+                } else {
+                    alert("Error al guardar la calificación.");
+                }
+            } catch (error) {
+                alert("Error de conexión con el servidor.");
+            }
         }
     </script>
 </body>

@@ -3,95 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SERVICIOS FULL</title>
+    <title>Servicios Full - Tu Solución Confiable</title>
     <style>
-        body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .logo-circle { background: #ffa500; color: black; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; margin: 0 auto 10px; }
-        .orange { color: #ffa500; }
-        .btn-group { margin: 20px 0; }
-        button { padding: 12px 20px; margin: 5px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-main { background: #ffa500; border: none; }
-        .btn-outline { background: transparent; border: 2px solid #ffa500; color: #ffa500; }
-        .form-container { background: #262626; padding: 20px; border-radius: 10px; display: inline-block; width: 90%; max-width: 450px; margin-top: 20px; border: 1px solid #333; }
-        input, textarea, select { display: block; margin: 10px auto; padding: 12px; width: 90%; border-radius: 5px; border: 1px solid #444; background: #fff; color: #000; font-size: 14px; }
-        textarea { resize: vertical; font-family: Arial, sans-serif; }
-        .hidden { display: none; }
-        #mensaje { margin-top: 15px; font-weight: bold; color: #ffa500; }
+        /* DISEÑO MODERNO Y CLARO */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6; /* Gris muy claro de fondo */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* FONDO DINÁMICO CON FOTOS DE SERVICIOS */
+        .background-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=2069'), 
+                              url('https://images.unsplash.com/photo-1581578731522-a20478d4486b?auto=format&fit=crop&q=80&w=2070');
+            background-blend-mode: overlay;
+            background-size: cover;
+            opacity: 0.15; /* Fotos suaves para no distraer */
+            z-index: -1;
+        }
+
+        /* CAJA CENTRAL (EL "CLUB DE SOLUCIONES") */
+        .hero-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid #e0e0e0; /* Marco Gris Plata fino */
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .orange-text { color: #ff6600; } /* Naranja vibrante para el título */
+
+        p { color: #666; font-size: 1.1em; margin-bottom: 30px; }
+
+        /* BOTONES DE ACCIÓN */
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-buscar {
+            background: #ff6600; /* Naranja de acción */
+            color: white;
+        }
+
+        .btn-prestador {
+            background: #00a884; /* Verde esmeralda de confianza/seguridad */
+            color: white;
+        }
+
+        .footer-text {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #999;
+        }
     </style>
 </head>
 <body>
-    <div class="logo-circle">SF</div>
-    <h1>SERVICIOS <span class="orange">FULL</span></h1>
-    <p>Conectamos necesidades con expertos locales.</p>
 
-    <div class="btn-group">
-        <button class="btn-main" onclick="window.location.href='/buscar.html'">BUSCO UN SERVICIO</button>
-        <button class="btn-outline" onclick="mostrarForm('prestador')">SOY PRESTADOR</button>
-    </div>
+    <div class="background-overlay"></div>
 
-    <div id="registro-seccion" class="form-container hidden">
-        <h3 id="titulo-form" class="orange">Registro de Prestador</h3>
-        <input type="text" id="nombre" placeholder="Nombre y Apellido">
-        <input type="email" id="email" placeholder="Email">
-        <input type="tel" id="celular" placeholder="Número de Celular">
-        <input type="text" id="ciudad" placeholder="Ciudad / Localidad">
-        
-        <div id="campos-prestador">
-            <input type="text" id="servicio" placeholder="Oficio principal (Ej: Plomero)">
-            <textarea id="resena" placeholder="Reseña del servicio (máximo 5 frases)" rows="3"></textarea>
-            <textarea id="experiencia" placeholder="Tu Expertise, Conocimientos y Experiencia" rows="3"></textarea>
-            <input type="text" id="referencias" placeholder="Referencias (Nombres o Teléfonos)">
+    <div class="hero-card">
+        <h1>SERVICIOS <span class="orange-text">FULL</span></h1>
+        <p>Encuentra expertos verificados en tu ciudad de forma segura.</p>
+
+        <div class="btn-container">
+            <a href="buscar.html" class="btn btn-buscar">🔍 BUSCAR EXPERTO</a>
+            <a href="registro.html" class="btn btn-prestador">👷 SOY PRESTADOR</a>
         </div>
 
-        <button class="btn-main" style="width: 95%; margin-top: 10px;" onclick="enviarDatos()">FINALIZAR REGISTRO</button>
-        <p id="mensaje"></p>
+        <div class="footer-text">
+            🛡️ Identidad Verificada | 💳 Pago Seguro | ⭐ Calidad Garantizada
+        </div>
     </div>
 
-    <script>
-        let tipoUsuario = 'prestador'; // El formulario principal ahora es para prestadores
-
-        function mostrarForm(tipo) {
-            document.getElementById('registro-seccion').classList.remove('hidden');
-            window.scrollTo(0, document.body.scrollHeight);
-        }
-
-        async function enviarDatos() {
-            const btn = event.target;
-            btn.innerText = "PROCESANDO...";
-            btn.disabled = true;
-
-            const datos = {
-                tipo: tipoUsuario,
-                nombre: document.getElementById('nombre').value,
-                email: document.getElementById('email').value,
-                celular: document.getElementById('celular').value,
-                ciudad: document.getElementById('ciudad').value,
-                servicio: document.getElementById('servicio').value,
-                resena: document.getElementById('resena').value,
-                experiencia: document.getElementById('experiencia').value,
-                referencias: document.getElementById('referencias').value
-            };
-
-            try {
-                const res = await fetch('/registro', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(datos)
-                });
-
-                if (res.ok) {
-                    document.getElementById('mensaje').innerText = "¡Registro enviado con éxito! Revisaremos tu perfil.";
-                    document.getElementById('registro-seccion').style.opacity = "0.5";
-                } else {
-                    document.getElementById('mensaje').innerText = "Error al enviar. Intenta de nuevo.";
-                }
-            } catch (error) {
-                document.getElementById('mensaje').innerText = "Error de conexión.";
-            } finally {
-                btn.innerText = "FINALIZAR REGISTRO";
-                btn.disabled = false;
-            }
-        }
-    </script>
 </body>
 </html>

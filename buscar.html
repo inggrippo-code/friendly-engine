@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador - Servicios Full</title>
+    <title>Buscador Inteligente - Servicios Full</title>
     <style>
         body { background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; text-align: center; }
         .orange { color: #ff6600; }
         
-        /* CUADRO DE BÚSQUEDA CLARO */
         .search-container {
             background: white;
             padding: 30px;
@@ -29,6 +28,22 @@
             font-size: 16px;
         }
 
+        /* PANEL DE SUGERENCIAS INTELIGENTES */
+        #panelSugerencias { margin: 15px 0; display: none; }
+        .chip {
+            display: inline-block;
+            background: #e0f2f1;
+            color: #00796b;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1px solid #b2dfdb;
+            font-weight: bold;
+        }
+        .chip:hover { background: #b2dfdb; }
+
         .btn-buscar {
             background: #ff6600;
             color: white;
@@ -41,7 +56,6 @@
             width: 85%;
         }
 
-        /* TARJETAS DE PRESTADORES CON MARCO PROFESIONAL */
         #resultados {
             display: flex;
             flex-wrap: wrap;
@@ -57,13 +71,12 @@
             border-radius: 12px;
             width: 300px;
             text-align: left;
-            border: 1px solid #eee; /* Marco fino sugerido */
+            border: 1px solid #eee;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            position: relative;
         }
 
-        .badge-verificado { color: #00a884; font-weight: bold; font-size: 12px; }
-        .badge-pendiente { color: #cc0000; font-weight: bold; font-size: 12px; }
+        .badge-verificado { color: #00a884; font-weight: bold; font-size: 11px; }
+        .badge-pendiente { color: #cc0000; font-weight: bold; font-size: 11px; }
 
         .btn-solicitar {
             background: #00a884;
@@ -75,8 +88,9 @@
             text-decoration: none;
             font-weight: bold;
             margin-top: 15px;
-            border: none;
             cursor: pointer;
+            border: none;
+            width: 100%;
         }
 
         .consejos-box {
@@ -96,11 +110,17 @@
     <h1 class="orange">Encuentra tu Experto</h1>
 
     <div class="consejos-box">
-        <strong>🛡️ SEGURIDAD PRIMERO:</strong> Por su protección, toda comunicación y pago debe realizarse a través de <b>Servicios Full</b>. No comparta datos personales.
+        🛡️ <b>Toda comunicación y pago debe ser por la App</b> para garantizar su seguridad y el cumplimiento del servicio.
     </div>
 
     <div class="search-container">
-        <input type="text" id="ciudad" placeholder="📍 ¿En qué ciudad estás?">
+        <input type="text" id="ciudad" placeholder="📍 ¿En qué ciudad estás?" oninput="detectarServicios()">
+        
+        <div id="panelSugerencias">
+            <p style="font-size: 12px; color: #888; margin: 5px 0;">Servicios disponibles en esta zona:</p>
+            <div id="listaSugerencias"></div>
+        </div>
+
         <input type="text" id="oficio" placeholder="🛠️ ¿Qué servicio buscas?">
         <button class="btn-buscar" onclick="ejecutarBusqueda()">BUSCAR EXPERTO</button>
     </div>
@@ -108,23 +128,59 @@
     <div id="resultados"></div>
 
     <script>
-        async function ejecutarBusqueda() {
+        let baseDatos = [];
+
+        // Cargar datos al iniciar
+        window.onload = async () => {
+            const res = await fetch('/usuarios-datos');
+            baseDatos = await res.json();
+        };
+
+        function detectarServicios() {
+            const ciudadIngresada = document.getElementById('ciudad').value.toLowerCase();
+            const panel = document.getElementById('panelSugerencias');
+            const lista = document.getElementById('listaSugerencias');
+            
+            if (ciudadIngresada.length < 3) {
+                panel.style.display = "none";
+                return;
+            }
+
+            // Filtrar oficios únicos para esa ciudad
+            const oficiosEnCiudad = [...new Set(baseDatos
+                .filter(p => p.ciudad.toLowerCase().includes(ciudadIngresada))
+                .map(p => p.servicio)
+            )];
+
+            if (oficiosEnCiudad.length > 0) {
+                panel.style.display = "block";
+                lista.innerHTML = "";
+                oficiosEnCiudad.forEach(o => {
+                    lista.innerHTML += `<span class="chip" onclick="seleccionarOficio('${o}')">${o}</span>`;
+                });
+            } else {
+                panel.style.display = "none";
+            }
+        }
+
+        function seleccionarOficio(o) {
+            document.getElementById('oficio').value = o;
+            ejecutarBusqueda();
+        }
+
+        function ejecutarBusqueda() {
             const ciudadBusqueda = document.getElementById('ciudad').value.toLowerCase();
             const oficioBusqueda = document.getElementById('oficio').value.toLowerCase();
             const div = document.getElementById('resultados');
             
-            div.innerHTML = "<p>Buscando en la red de confianza...</p>";
-
-            const res = await fetch('/usuarios-datos');
-            const lista = await res.json();
-
-            const filtrados = lista.filter(p => 
+            const filtrados = baseDatos.filter(p => 
                 p.ciudad.toLowerCase().includes(ciudadBusqueda) && 
                 p.servicio.toLowerCase().includes(oficioBusqueda) &&
                 p.tipo === 'prestador'
             );
 
-            div.innerHTML = "";
+            div.innerHTML = filtrados.length > 0 ? "" : "<p>No hay expertos aún con ese criterio.</p>";
+
             filtrados.forEach(p => {
                 const statusSello = p.verificado ? 
                     `<span class="badge-verificado">● IDENTIDAD VERIFICADA</span>` : 
@@ -136,16 +192,11 @@
                         <h3 style="margin: 10px 0 5px 0;">${p.nombre}</h3>
                         <small>📍 ${p.ciudad} | ⭐ ${p.calificacion || 'Buena'}</small>
                         <p style="font-size: 14px; color: #666;">"${p.resena}"</p>
-                        <button class="btn-solicitar" onclick="solicitarServicio('${p.nombre}')">SOLICITAR PRESUPUESTO</button>
+                        <button class="btn-solicitar" onclick="alert('Solicitud enviada a ${p.nombre}. El sistema de pago seguro se activará pronto.')">SOLICITAR PRESUPUESTO</button>
                     </div>
                 `;
             });
         }
-
-        function solicitarServicio(nombre) {
-            alert("Has solicitado un presupuesto a " + nombre + ". En breve el sistema habilitará el chat seguro.");
-        }
     </script>
-
 </body>
 </html>

@@ -3,199 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador Inteligente - Servicios Full</title>
+    <title>Buscador Premium - Servicios Full</title>
     <style>
-        body { background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; text-align: center; }
-        .orange { color: #ff6600; }
-        
-        .search-container {
+        /* ESTÉTICA CLARA E IMPACTANTE */
+        body { 
+            background-color: #f4f7f6; 
+            color: #333; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; 
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* FONDO SUGERENTE (Igual a la apertura) */
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1581578731522-a20478d4486b?auto=format&fit=crop&q=80&w=2070');
+            background-size: cover;
+            opacity: 0.05;
+            z-index: -1;
+        }
+
+        /* GUÍA DE SEGURIDAD ESCUETA Y ELEGANTE */
+        .mini-seguridad {
+            background: #e3f2fd;
+            color: #0d47a1;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 12px;
+            margin-top: 20px;
+            border: 1px solid #bbdefb;
+            font-weight: 500;
+        }
+
+        h1 { color: #333; margin-top: 15px; font-weight: 300; }
+        .orange { color: #ff6600; font-weight: bold; }
+
+        /* CUADRO DE BÚSQUEDA MODERNO */
+        .search-box {
             background: white;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            max-width: 600px;
-            margin: 0 auto 30px auto;
-            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 90%;
+            max-width: 500px;
+            margin-top: 20px;
+            border: 1px solid #eee;
         }
 
         input {
-            display: inline-block;
-            margin: 10px;
+            width: 90%;
             padding: 15px;
-            width: 80%;
-            border-radius: 8px;
+            margin: 10px 0;
             border: 1px solid #ddd;
+            border-radius: 12px;
             font-size: 16px;
+            outline: none;
         }
-
-        /* PANEL DE SUGERENCIAS INTELIGENTES */
-        #panelSugerencias { margin: 15px 0; display: none; }
-        .chip {
-            display: inline-block;
-            background: #e0f2f1;
-            color: #00796b;
-            padding: 8px 15px;
-            border-radius: 20px;
-            margin: 5px;
-            font-size: 13px;
-            cursor: pointer;
-            border: 1px solid #b2dfdb;
-            font-weight: bold;
-        }
-        .chip:hover { background: #b2dfdb; }
 
         .btn-buscar {
             background: #ff6600;
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 15px;
+            width: 95%;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            margin-top: 10px;
-            width: 85%;
+            font-size: 16px;
+            transition: 0.3s;
         }
 
+        .btn-buscar:hover { background: #e65c00; transform: scale(1.02); }
+
+        /* TARJETAS DE SERVICIOS */
         #resultados {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
         }
 
         .tarjeta {
             background: white;
-            padding: 25px;
-            border-radius: 12px;
-            width: 300px;
-            text-align: left;
+            padding: 20px;
+            border-radius: 15px;
+            width: 280px;
             border: 1px solid #eee;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04);
+            text-align: left;
+            transition: 0.3s;
         }
 
-        .badge-verificado { color: #00a884; font-weight: bold; font-size: 11px; }
-        .badge-pendiente { color: #cc0000; font-weight: bold; font-size: 11px; }
+        .tarjeta:hover { border-color: #ff6600; }
+
+        .sello { font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .verificado { color: #00a884; }
+        .pendiente { color: #d32f2f; }
 
         .btn-solicitar {
             background: #00a884;
             color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 6px;
-            display: block;
-            text-decoration: none;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
             font-weight: bold;
             margin-top: 15px;
             cursor: pointer;
-            border: none;
-            width: 100%;
-        }
-
-        .consejos-box {
-            background: #eef7ff;
-            color: #004080;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 14px;
-            max-width: 600px;
-            margin: 20px auto;
-            border: 1px solid #cce5ff;
         }
     </style>
 </head>
 <body>
 
-    <h1 class="orange">Encuentra tu Experto</h1>
+    <div class="bg-overlay"></div>
 
-    <div class="consejos-box">
-        🛡️ <b>Toda comunicación y pago debe ser por la App</b> para garantizar su seguridad y el cumplimiento del servicio.
+    <div class="mini-seguridad">
+        🛡️ Pago Protegido por Servicios Full. No comparta datos de contacto.
     </div>
 
-    <div class="search-container">
-        <input type="text" id="ciudad" placeholder="📍 ¿En qué ciudad estás?" oninput="detectarServicios()">
-        
-        <div id="panelSugerencias">
-            <p style="font-size: 12px; color: #888; margin: 5px 0;">Servicios disponibles en esta zona:</p>
-            <div id="listaSugerencias"></div>
-        </div>
+    <h1>Busca en <span class="orange">Servicios Full</span></h1>
 
-        <input type="text" id="oficio" placeholder="🛠️ ¿Qué servicio buscas?">
-        <button class="btn-buscar" onclick="ejecutarBusqueda()">BUSCAR EXPERTO</button>
+    <div class="search-box">
+        <input type="text" id="ciudad" placeholder="📍 Ciudad (ej: Posadas)">
+        <input type="text" id="oficio" placeholder="🛠️ ¿Qué necesitas? (ej: Electricista)">
+        <button class="btn-buscar" onclick="ejecutarBusqueda()">ENCUENTRAR EXPERTO</button>
     </div>
 
     <div id="resultados"></div>
 
     <script>
-        let baseDatos = [];
-
-        // Cargar datos al iniciar
-        window.onload = async () => {
-            const res = await fetch('/usuarios-datos');
-            baseDatos = await res.json();
-        };
-
-        function detectarServicios() {
-            const ciudadIngresada = document.getElementById('ciudad').value.toLowerCase();
-            const panel = document.getElementById('panelSugerencias');
-            const lista = document.getElementById('listaSugerencias');
-            
-            if (ciudadIngresada.length < 3) {
-                panel.style.display = "none";
-                return;
-            }
-
-            // Filtrar oficios únicos para esa ciudad
-            const oficiosEnCiudad = [...new Set(baseDatos
-                .filter(p => p.ciudad.toLowerCase().includes(ciudadIngresada))
-                .map(p => p.servicio)
-            )];
-
-            if (oficiosEnCiudad.length > 0) {
-                panel.style.display = "block";
-                lista.innerHTML = "";
-                oficiosEnCiudad.forEach(o => {
-                    lista.innerHTML += `<span class="chip" onclick="seleccionarOficio('${o}')">${o}</span>`;
-                });
-            } else {
-                panel.style.display = "none";
-            }
-        }
-
-        function seleccionarOficio(o) {
-            document.getElementById('oficio').value = o;
-            ejecutarBusqueda();
-        }
-
-        function ejecutarBusqueda() {
-            const ciudadBusqueda = document.getElementById('ciudad').value.toLowerCase();
-            const oficioBusqueda = document.getElementById('oficio').value.toLowerCase();
+        async function ejecutarBusqueda() {
+            const ciudad = document.getElementById('ciudad').value.trim().toLowerCase();
+            const oficio = document.getElementById('oficio').value.trim().toLowerCase();
             const div = document.getElementById('resultados');
-            
-            const filtrados = baseDatos.filter(p => 
-                p.ciudad.toLowerCase().includes(ciudadBusqueda) && 
-                p.servicio.toLowerCase().includes(oficioBusqueda) &&
-                p.tipo === 'prestador'
-            );
 
-            div.innerHTML = filtrados.length > 0 ? "" : "<p>No hay expertos aún con ese criterio.</p>";
+            div.innerHTML = "<p>Conectando con expertos...</p>";
 
-            filtrados.forEach(p => {
-                const statusSello = p.verificado ? 
-                    `<span class="badge-verificado">● IDENTIDAD VERIFICADA</span>` : 
-                    `<span class="badge-pendiente">⚠ EN PROCESO DE VALIDACIÓN</span>`;
+            try {
+                const res = await fetch('/usuarios-datos');
+                const datos = await res.json();
 
-                div.innerHTML += `
-                    <div class="tarjeta">
-                        ${statusSello}<br>
-                        <h3 style="margin: 10px 0 5px 0;">${p.nombre}</h3>
-                        <small>📍 ${p.ciudad} | ⭐ ${p.calificacion || 'Buena'}</small>
-                        <p style="font-size: 14px; color: #666;">"${p.resena}"</p>
-                        <button class="btn-solicitar" onclick="alert('Solicitud enviada a ${p.nombre}. El sistema de pago seguro se activará pronto.')">SOLICITAR PRESUPUESTO</button>
-                    </div>
-                `;
-            });
+                // Búsqueda flexible: busca si el texto está incluido
+                const filtrados = datos.filter(p => 
+                    p.ciudad.toLowerCase().includes(ciudad) && 
+                    p.servicio.toLowerCase().includes(oficio) &&
+                    p.tipo === 'prestador'
+                );
+
+                div.innerHTML = "";
+
+                if (filtrados.length === 0) {
+                    div.innerHTML = "<p>No encontramos expertos aún con esos términos. Intenta con otra palabra.</p>";
+                    return;
+                }
+
+                filtrados.forEach(p => {
+                    const selloClass = p.verificado ? 'verificado' : 'pendiente';
+                    const selloTxt = p.verificado ? '● Verificado' : '⚠ En Proceso';
+
+                    div.innerHTML += `
+                        <div class="tarjeta">
+                            <span class="sello ${selloClass}">${selloTxt}</span>
+                            <h3 style="margin: 8px 0;">${p.nombre}</h3>
+                            <p style="font-size: 13px; color: #777; margin: 0;">📍 ${p.ciudad} | ⭐ ${p.calificacion}</p>
+                            <p style="font-size: 14px; font-style: italic; color: #444;">"${p.resena}"</p>
+                            <button class="btn-solicitar" onclick="alert('Solicitud enviada. Activando pago seguro...')">SOLICITAR</button>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                div.innerHTML = "<p>Error al cargar. Intente de nuevo.</p>";
+            }
         }
     </script>
 </body>
